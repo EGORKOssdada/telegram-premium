@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Premium</title>
+  <style>
+    :root {
+      --bg: #08111d;
+      --bg2: #0d1726;
+      --card: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.08);
+      --text: #f5f7fb;
+      --muted: #9ba8bb;
+      --accent: #2AABEE;
+      --accent-hover: #229ED9;
+      --success: #79d3ff;
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(42,171,238,0.14), transparent 30%),
+        linear-gradient(180deg, #06101c 0%, #08111d 45%, #0a1422 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-blur {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-blur::before,
+    .bg-blur::after {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: rgba(42,171,238,0.08);
+      filter: blur(60px);
+      animation: floatBlob 12s ease-in-out infinite;
+    }
+
+    .bg-blur::before {
+      top: 50px;
+      left: -80px;
+    }
+
+    .bg-blur::after {
+      right: -100px;
+      top: 260px;
+      animation-delay: 2s;
+    }
+
+    @keyframes floatBlob {
+      0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+      50% { transform: translateY(-20px) translateX(20px) scale(1.05); }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 20px 120px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 0 24px;
+      animation: fadeUp .8s ease both;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(42,171,238,0.25), rgba(42,171,238,0.08));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      font-size: 18px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: .25s ease;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(42,171,238,0.35);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      padding: 30px 0 26px;
+    }
+
+    .hero-left {
+      animation: fadeUp .9s ease both;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(42,171,238,0.12);
+      border: 1px solid rgba(42,171,238,0.28);
+      color: #bfe9ff;
+      font-size: 14px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: 1.02;
+      letter-spacing: -1.5px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+      margin: 20px 0 28px;
+      max-width: 650px;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .point {
+      padding: 12px 15px;
+      border-radius: 14px;
+      font-size: 14px;
+      color: #dce7f5;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      transition: .25s ease;
+    }
+
+    .point:hover {
+      transform: translateY(-3px);
+      border-color: rgba(42,171,238,0.3);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 22px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: .25s ease;
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(180deg, #36b6f7 0%, #229ED9 100%);
+      box-shadow: 0 12px 30px rgba(42,171,238,0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(42,171,238,0.32);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      border-color: rgba(42,171,238,0.3);
+    }
+
+    .hero-card {
+      animation: fadeUp 1.1s ease both;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.035));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -50px -80px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(42,171,238,0.22), transparent 70%);
+      filter: blur(8px);
+    }
+
+    .phone {
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, #0f1c2d 0%, #0a1421 100%);
+      padding: 18px;
+      min-height: 420px;
+      position: relative;
+    }
+
+    .phone-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #c7d6ea;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .telegram-mini {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      animation: pulseCard 2.6s ease-in-out infinite;
+    }
+
+    .telegram-mini strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .telegram-mini span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @keyframes pulseCard {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.015); }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section {
+      padding: 56px 0 8px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -1px;
+      margin: 0 0 12px;
+      text-align: center;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 28px;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 18px;
+    }
+
+    .plan {
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.03));
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      transition: .28s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .plan:hover {
+      transform: translateY(-7px);
+      border-color: rgba(42,171,238,0.28);
+    }
+
+    .plan.active {
+      border-color: var(--accent);
+      box-shadow: 0 22px 44px rgba(42,171,238,0.18);
+      transform: translateY(-6px);
+    }
+
+    .plan.popular::after {
+      content: "самый популярный";
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: #c7efff;
+      background: rgba(42,171,238,0.16);
+      border: 1px solid rgba(42,171,238,0.28);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .plan-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .price {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .price strong {
+      font-size: 42px;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .price span {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .plan-desc {
+      color: #d7e1ef;
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    .plan-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .plan-list div {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .plan-list div::before {
+      content: "•";
+      color: var(--accent);
+      position: absolute;
+      left: 4px;
+      top: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .select-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      transition: .25s ease;
+    }
+
+    .plan.active .select-btn,
+    .select-btn:hover {
+      background: linear-gradient(180deg, #36b6f7 0%, #229ED9 100%);
+      color: #fff;
+    }
+
+    .selected-box {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 18px 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .selected-text {
+      color: #dfe8f5;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .selected-text strong {
+      color: #fff;
+      font-size: 17px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    .feature {
+      padding: 22px 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: .25s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      border-color: rgba(42,171,238,0.28);
+    }
+
+    .feature .icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .feature strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .feature span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .trust {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .trust-card {
+      padding: 22px 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .trust-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .trust-card span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .faq {
+      max-width: 820px;
+      margin: 10px auto 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .faq-item {
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      text-align: left;
+      padding: 20px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .faq-question span:last-child {
+      color: var(--muted);
+      transition: .25s ease;
+      font-size: 20px;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .28s ease, padding .28s ease;
+      color: var(--muted);
+      line-height: 1.7;
+      padding: 0 22px;
+      font-size: 15px;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 180px;
+      padding: 0 22px 20px;
+    }
+
+    .faq-item.open .faq-question span:last-child {
+      transform: rotate(45deg);
+      color: #fff;
+    }
+
+    .cta-box {
+      margin-top: 28px;
+      padding: 28px;
+      border-radius: 28px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(42,171,238,0.13), rgba(255,255,255,0.04));
+      border: 1px solid rgba(42,171,238,0.22);
+      box-shadow: var(--shadow);
+    }
+
+    .cta-box strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .cta-box p {
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 18px;
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 40px 0 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sticky-bar {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
+      display: none;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(8,17,29,0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .sticky-bar .btn {
+      flex: 1;
+      padding: 14px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: .75s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .plans,
+      .features,
+      .trust {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        padding-bottom: 110px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero {
+        gap: 20px;
+        padding-top: 10px;
+      }
+
+      h1 {
+        line-height: 1.08;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-bar {
+        display: flex;
+      }
+
+      .selected-box {
+        padding: 16px;
+      }
+
+      .cta-box {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blur"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge">✈️</div>
+        <div>Telegram Premium</div>
+      </div>
+
+      <div class="top-actions">
+        <a class="mini-btn" href="#plans">Тарифы</a>
+        <a class="mini-btn" href="#faq">FAQ</a>
+        <a class="mini-btn" href="https://t.me/siarusO" target="_blank">Поддержка</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-left">
+        <div class="badge">Официальный переход в Telegram • быстро и безопасно</div>
+        <h1>Подключи Telegram Premium без лишних шагов</h1>
+        <p>
+          Выбери подходящий срок, перейди в официальный Telegram-бот и оформи подписку за пару минут.
+          Ничего лишнего — только понятный выбор, поддержка и быстрый переход.
+        </p>
+
+        <div class="hero-points">
+          <div class="point">⚡ Активация за 1–2 минуты</div>
+          <div class="point">🔒 Безопасный переход</div>
+          <div class="point">💬 Поддержка в Telegram</div>
+          <div class="point">📦 Выбор удобного срока</div>
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#plans">Выбрать тариф</a>
+          <a class="btn btn-secondary" href="https://t.me/siarusO" target="_blank">Написать в поддержку</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="phone">
+          <div class="phone-head">
+            <span>Premium</span>
+            <span>Online</span>
+          </div>
+
+          <div class="telegram-mini">
+            <strong>3 месяца — 1099 ₽</strong>
+            <span>Быстрый старт для тех, кто хочет попробовать возможности Premium без длинного срока.</span>
+          </div>
+
+          <div class="telegram-mini">
+            <strong>6 месяцев — 1499 ₽</strong>
+            <span>Оптимальный вариант по цене и сроку. Самый удобный выбор для большинства.</span>
+          </div>
+
+          <div class="telegram-mini">
+            <strong>12 месяцев — 2699 ₽</strong>
+            <span>Максимальный срок для тех, кто хочет закрыть вопрос надолго и подключить Premium один раз.</span>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>1–2 мин</strong>
+              <span>на переход</span>
+            </div>
+            <div class="stat">
+              <strong>3 тарифа</strong>
+              <span>на выбор</span>
+            </div>
+            <div class="stat">
+              <strong>24/7</strong>
+              <span>поддержка</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="plans">
+      <h2 class="section-title">Выбери подходящий тариф</h2>
+      <p class="section-sub">
+        Всё просто: нажми на тариф, выбери вариант, после чего перейди в Telegram для дальнейшего оформления.
+      </p>
+
+      <div class="plans">
+        <div class="plan" data-plan="3 месяца" data-price="1099 ₽">
+          <div class="plan-title">3 месяца</div>
+          <div class="price">
+            <strong>1099 ₽</strong>
+            <span>разово</span>
+          </div>
+          <div class="plan-desc">Подходит, чтобы начать и оценить Premium.</div>
+          <div class="plan-list">
+            <div>Удобный старт без длинного срока</div>
+            <div>Быстрое оформление через Telegram</div>
+            <div>Хороший вариант для первого подключения</div>
+          </div>
+          <button class="select-btn">Выбрать тариф</button>
+        </div>
+
+        <div class="plan popular active" data-plan="6 месяцев" data-price="1499 ₽">
+          <div class="plan-title">6 месяцев</div>
+          <div class="price">
+            <strong>1499 ₽</strong>
+            <span>разово</span>
+          </div>
+          <div class="plan-desc">Самый сбалансированный вариант по сроку и цене.</div>
+          <div class="plan-list">
+            <div>Оптимальный выбор для большинства</div>
+            <div>Чаще выбирают именно этот тариф</div>
+            <div>Надолго закрывает вопрос с Premium</div>
+          </div>
+          <button class="select-btn">Выбран</button>
+        </div>
+
+        <div class="plan" data-plan="12 месяцев" data-price="2699 ₽">
+          <div class="plan-title">12 месяцев</div>
+          <div class="price">
+            <strong>2699 ₽</strong>
+            <span>разово</span>
+          </div>
+          <div class="plan-desc">Для тех, кто хочет подключить один раз и надолго.</div>
+          <div class="plan-list">
+            <div>Максимальный срок без лишних действий</div>
+            <div>Удобно, если пользуешься Telegram постоянно</div>
+            <div>Долгосрочное решение без повторных поисков</div>
+          </div>
+          <button class="select-btn">Выбрать тариф</button>
+        </div>
+      </div>
+
+      <div class="selected-box">
+        <div class="selected-text">
+          Сейчас выбран: <strong id="selectedPlan">6 месяцев</strong> — <strong id="selectedPrice">1499 ₽</strong><br>
+          Нажми кнопку справа, чтобы перейти к официальному боту в Telegram.
+        </div>
+        <a class="btn btn-primary" id="buyNowBtn" href="https://t.me/Premium_TG_shop_bot" target="_blank">Перейти к покупке</a>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2 class="section-title">Почему выбирают этот сайт</h2>
+      <p class="section-sub">
+        Минимум лишних действий, понятный выбор тарифов и быстрый переход в Telegram без перегруженных страниц.
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="icon">🎯</div>
+          <strong>Понятный интерфейс</strong>
+          <span>Пользователь сразу видит сроки, цены и главное действие — перейти к покупке.</span>
+        </div>
+
+        <div class="feature">
+          <div class="icon">⚡</div>
+          <strong>Быстрый сценарий</strong>
+          <span>Меньше отвлекающих блоков, больше шансов, что человек дойдёт до Telegram.</span>
+        </div>
+
+        <div class="feature">
+          <div class="icon">🛡️</div>
+          <strong>Аккуратный стиль</strong>
+          <span>Тёмный современный дизайн выглядит надёжнее и лучше удерживает внимание.</span>
+        </div>
+
+        <div class="feature">
+          <div class="icon">💬</div>
+          <strong>Поддержка рядом</strong>
+          <span>Если есть вопрос — можно сразу написать в Telegram без поиска контактов.</span>
+        </div>
+      </div>
+
+      <div class="trust">
+        <div class="trust-card">
+          <strong>Быстрый старт</strong>
+          <span>Сайт подталкивает к действию уже с первого экрана и не перегружает длинными текстами.</span>
+        </div>
+        <div class="trust-card">
+          <strong>Выбор без сомнений</strong>
+          <span>Средний тариф выделен визуально, чтобы пользователю было легче принять решение.</span>
+        </div>
+        <div class="trust-card">
+          <strong>Чистая структура</strong>
+          <span>Главный экран, тарифы, преимущества, FAQ и поддержка — всё на своих местах.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="faq">
+      <h2 class="section-title">Частые вопросы</h2>
+      <p class="section-sub">
+        Коротко ответили на то, что чаще всего спрашивают перед переходом в Telegram.
+      </p>
+
+      <div class="faq">
+        <div class="faq-item open">
+          <button class="faq-question">
+            <span>Как проходит покупка?</span>
+            <span>+</span>
+          </button>
+          <div class="faq-answer">
+            После выбора тарифа пользователь нажимает кнопку перехода и попадает в Telegram. Дальше оформление продолжается уже там.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Сколько времени занимает переход?</span>
+            <span>+</span>
+          </button>
+          <div class="faq-answer">
+            Обычно достаточно 1–2 минут: выбрать срок, нажать кнопку и перейти в Telegram.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Куда писать, если есть вопрос?</span>
+            <span>+</span>
+          </button>
+          <div class="faq-answer">
+            Для этого есть кнопка поддержки. Нажатие сразу открывает Telegram-контакт для связи.
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <strong>Выбери тариф и перейди к оформлению</strong>
+        <p>
+          Чем проще путь до нужного действия, тем выше шанс, что пользователь завершит переход. Здесь всё уже собрано в одном месте.
+        </p>
+        <a class="btn btn-primary" href="#plans">Перейти к тарифам</a>
+      </div>
+    </section>
+
+    <div class="footer">
+      Поддержка в Telegram • Быстрый выбор тарифа • Современный интерфейс
+    </div>
+  </div>
+
+  <div class="sticky-bar">
+    <a class="btn btn-secondary" href="https://t.me/siarusO" target="_blank">Поддержка</a>
+    <a class="btn btn-primary" href="https://t.me/Premium_TG_shop_bot" target="_blank">Купить</a>
+  </div>
+
+  <script>
+    const plans = document.querySelectorAll('.plan');
+    const selectedPlan = document.getElementById('selectedPlan');
+    const selectedPrice = document.getElementById('selectedPrice');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+
+    plans.forEach(plan => {
+      plan.addEventListener('click', () => {
+        plans.forEach(p => {
+          p.classList.remove('active');
+          const btn = p.querySelector('.select-btn');
+          if (btn) btn.textContent = 'Выбрать тариф';
+        });
+
+        plan.classList.add('active');
+        const planName = plan.dataset.plan;
+        const price = plan.dataset.price;
+
+        plan.querySelector('.select-btn').textContent = 'Выбран';
+        selectedPlan.textContent = planName;
+        selectedPrice.textContent = price;
+
+        buyNowBtn.innerHTML = `Перейти к покупке — ${planName}`;
+      });
+    });
+
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.parentElement;
+        item.classList.toggle('open');
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
